@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Should;
+using Should;
 
 namespace Charlotte.Tests
 {
@@ -16,7 +16,7 @@ namespace Charlotte.Tests
             MqttTopicMatcher matcher = new MqttTopicMatcher();
 
             matcher.BoilWildcards("{wildcard}/{another}/{again}")
-                .ShouldBe("+/+/+");
+                .ShouldEqual("+/+/+");
         }
 
         [Fact]
@@ -25,7 +25,7 @@ namespace Charlotte.Tests
             MqttTopicMatcher matcher = new MqttTopicMatcher();
 
             matcher.BoilWildcards("{wildcard}/not_a_wildcard/{but_this_is}")
-                .ShouldBe("+/not_a_wildcard/+");
+                .ShouldEqual("+/not_a_wildcard/+");
         }
 
         [Fact]
