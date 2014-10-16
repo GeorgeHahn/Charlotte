@@ -82,6 +82,8 @@ namespace Charlotte
         {
             set
             {
+                topicMatcher.VerifyWildcardNames(topic);
+
                 _client.Subscribe(new[] { topicMatcher.BoilWildcards(topic) }, new byte[] { 2 });
                 _handlers.Add(topic, value);
             }

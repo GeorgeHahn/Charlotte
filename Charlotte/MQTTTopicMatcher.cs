@@ -2,12 +2,43 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Charlotte
 {
+    public class InvalidWildcardException : ApplicationException
+    {
+        public InvalidWildcardException(string message)
+            : base(message)
+        { }
+    }
+
     public class MqttTopicMatcher
     {
+        public void VerifyWildcardNames(string topic)
+        {
+            var ident = new Regex(@"(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl})((\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\p{Cf}))*");
+
+            foreach (var wildcard in ExtractWildcards(topic))
+            {
+                var match = ident.Match(wildcard.Normalize());
+                if ((!match.Success) || (match.Groups[0].ToString() != wildcard))
+                    throw new InvalidWildcardException("Invalid wildcards in topic: " + topic);
+            }
+        }
+
+        public IEnumerable<string> ExtractWildcards(string topic)
+        {
+            while (topic.Contains('{') && topic.Contains('}'))
+            {
+                string wildcardName = topic.Substring(topic.IndexOf('{') + 1, topic.IndexOf('}') - topic.IndexOf('{') - 1);
+                topic = topic.Replace('{' + wildcardName + '}', "+");
+
+                yield return wildcardName;
+            }
+        } 
+
         public string BoilWildcards(string topic)
         {
             if (!(topic.Contains('{') && topic.Contains('}')))
