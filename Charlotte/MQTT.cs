@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Anotar.NLog;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Exceptions;
 using uPLibrary.Networking.M2Mqtt.Messages;
@@ -32,7 +31,7 @@ namespace Charlotte
 
             _handlers = new Dictionary<string, Action<MqttMessage>>();
 
-            LogTo.Debug("New MQTT created for {2}@{0}:{1}", brokerHostName, brokerPort, username);
+            //LogTo.Debug("New MQTT created for {2}@{0}:{1}", brokerHostName, brokerPort, username);
         }
 
 
@@ -47,7 +46,7 @@ namespace Charlotte
             }
             catch(MqttConnectionException e)
             {
-                LogTo.ErrorException("Couldn't connect to MQTT broker", e);
+                //LogTo.ErrorException("Couldn't connect to MQTT broker", e);
                 throw;
             }
         }
@@ -62,6 +61,14 @@ namespace Charlotte
             lock (_client)
             {
                 _client.Publish(topic, Encoding.UTF8.GetBytes(message));
+            }
+        }
+
+        public void Publish(string topic, string message, byte qos, bool retain)
+        {
+            lock (_client)
+            {
+                _client.Publish(topic, Encoding.UTF8.GetBytes(message), qos, retain);
             }
         }
 

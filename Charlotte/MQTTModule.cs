@@ -6,7 +6,7 @@ namespace Charlotte
     abstract public class MqttModule
     {
         protected Mqtt On;
-        protected Action<string, string> Publish;
+        //protected Action<string, string> Publish;
         protected Action OnConnect;
 
         private static readonly Dictionary<MqttHost, Mqtt> Clients = new Dictionary<MqttHost, Mqtt>();
@@ -34,10 +34,10 @@ namespace Charlotte
 
             On = Clients[_thishost];
 
-            Publish = (topic, message) =>
-            {
-                On.Publish(topic, message);
-            };
+            //Publish = (topic, message) =>
+            //{
+            //    On.Publish(topic, message);
+            //};
         }
 
         protected MqttModule(string brokerHostName, int brokerPort)
@@ -47,6 +47,16 @@ namespace Charlotte
         protected MqttModule(string brokerHostName)
             : this(brokerHostName, 1883, "", "")
         { }
+
+        public void Publish(string topic, string message)
+        {
+            On.Publish(topic, message);
+        }
+
+        public void Publish(string topic, string message, bool retain)
+        {
+            On.Publish(topic, message, 2, retain);
+        }
 
         protected void Connect()
         {
