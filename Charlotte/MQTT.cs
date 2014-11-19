@@ -83,12 +83,20 @@ namespace Charlotte
             var message = new MqttMessage { Message = Encoding.UTF8.GetString(e.Message), Topic = e.Topic };
             if (_handlers.ContainsKey(e.Topic))
                 _handlers[e.Topic](message);
-            
-            foreach (string key in _handlers.Keys)
+
+            List<Action<MqttMessage>> handlers = new List<Action<MqttMessage>>();
+
+            lock (_handlers)
             {
-                if (topicMatcher.TopicsMatch(message, key, e.Topic))
-                    _handlers[key](message);
+                foreach (string key in _handlers.Keys)
+                {
+                    if (topicMatcher.TopicsMatch(message, key, e.Topic))
+                        handlers.Add(_handlers[key]);
+                }
             }
+
+            foreach (var handler in handlers)
+                handler(message);
         }
 
         public Action<dynamic> this[string topic]
@@ -98,7 +106,10 @@ namespace Charlotte
                 topicMatcher.VerifyWildcardNames(topic);
 
                 _client.Subscribe(new[] { topicMatcher.BoilWildcards(topic) }, new byte[] { 2 });
-                _handlers.Add(topic, value);
+                lock (_handlers)
+                {
+                    _handlers.Add(topic, value);
+                }
             }
         }
     }
