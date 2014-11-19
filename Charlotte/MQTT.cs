@@ -58,6 +58,9 @@ namespace Charlotte
 
         public void Publish(string topic, string message)
         {
+            if (!IsConnected)
+                throw new Exception("Not connected");
+
             lock (_client)
             {
                 _client.Publish(topic, Encoding.UTF8.GetBytes(message));
@@ -66,6 +69,9 @@ namespace Charlotte
 
         public void Publish(string topic, string message, byte qos, bool retain)
         {
+            if (!IsConnected)
+                throw new Exception("Not connected");
+
             lock (_client)
             {
                 _client.Publish(topic, Encoding.UTF8.GetBytes(message), qos, retain);
