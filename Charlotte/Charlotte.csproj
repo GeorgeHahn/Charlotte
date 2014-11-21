@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MqttHandler.cs" />
     <Compile Include="MQTTHost.cs" />
     <Compile Include="MQTT.cs" />
     <Compile Include="MQTTMessage.cs" />

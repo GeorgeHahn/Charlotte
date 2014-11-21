@@ -11,7 +11,7 @@ namespace Charlotte
     public class Mqtt
     {
         private readonly MqttClient _client;
-        private readonly Dictionary<string, Action<MqttMessage>> _handlers;
+        private readonly List<MqttHandler> _handlers;
         private readonly string _clientId;
         private readonly string _username;
         private readonly string _password;
@@ -29,7 +29,7 @@ namespace Charlotte
             _client = new MqttClient(brokerHostName, brokerPort, false, null);
             _client.MqttMsgPublishReceived += (o, args) => MqttMsgReceived(args);
 
-            _handlers = new Dictionary<string, Action<MqttMessage>>();
+            _handlers = new List<MqttHandler>();
 
             //LogTo.Debug("New MQTT created for {2}@{0}:{1}", brokerHostName, brokerPort, username);
         }
@@ -81,22 +81,20 @@ namespace Charlotte
         private void MqttMsgReceived(MqttMsgPublishEventArgs e)
         {
             var message = new MqttMessage { Message = Encoding.UTF8.GetString(e.Message), Topic = e.Topic };
-            if (_handlers.ContainsKey(e.Topic))
-                _handlers[e.Topic](message);
 
-            List<Action<MqttMessage>> handlers = new List<Action<MqttMessage>>();
+            List<Action<MqttMessage>> actions = new List<Action<MqttMessage>>();
 
             lock (_handlers)
             {
-                foreach (string key in _handlers.Keys)
+                foreach (var handler in _handlers)
                 {
-                    if (topicMatcher.TopicsMatch(message, key, e.Topic))
-                        handlers.Add(_handlers[key]);
+                    if (topicMatcher.TopicsMatch(message, handler.Topic, e.Topic))
+                        actions.Add(handler.Action);
                 }
             }
 
-            foreach (var handler in handlers)
-                handler(message);
+            foreach (var action in actions)
+                action(message);
         }
 
         public Action<dynamic> this[string topic]
@@ -108,7 +106,7 @@ namespace Charlotte
                 _client.Subscribe(new[] { topicMatcher.BoilWildcards(topic) }, new byte[] { 2 });
                 lock (_handlers)
                 {
-                    _handlers.Add(topic, value);
+                    _handlers.Add(new MqttHandler(topic, value));
                 }
             }
         }
