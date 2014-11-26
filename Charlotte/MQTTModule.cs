@@ -70,7 +70,7 @@ namespace Charlotte
             Stop();
             ClientUseCount[_thishost]--;
 
-            if(ClientUseCount[_thishost] <= 0)
+            if (ClientUseCount[_thishost] <= 0)
                 On.Disconnect();
         }
     }

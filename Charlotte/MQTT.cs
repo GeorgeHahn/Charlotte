@@ -41,12 +41,19 @@ namespace Charlotte
         {
             try
             {
-                if(!IsConnected)
+                if (!IsConnected)
+                {
                     _client.Connect(_clientId, _username, _password);
+                }
             }
-            catch(MqttConnectionException e)
+            catch (MqttConnectionException e)
             {
-                //LogTo.ErrorException("Couldn't connect to MQTT broker", e);
+                // LogTo.ErrorException("Couldn't connect to MQTT broker", e);
+                throw;
+            }
+            catch (MqttCommunicationException e)
+            {
+                // Log
                 throw;
             }
         }
@@ -61,6 +68,11 @@ namespace Charlotte
             if (!IsConnected)
                 throw new Exception("Not connected");
 
+            if (message == null)
+                throw new ArgumentNullException("message");
+            if (topic == null)
+                throw new ArgumentNullException("topic");
+
             lock (_client)
             {
                 _client.Publish(topic, Encoding.UTF8.GetBytes(message));
@@ -71,6 +83,11 @@ namespace Charlotte
         {
             if (!IsConnected)
                 throw new Exception("Not connected");
+
+            if (message == null)
+                throw new ArgumentNullException("message");
+            if (topic == null)
+                throw new ArgumentNullException("topic");
 
             lock (_client)
             {
