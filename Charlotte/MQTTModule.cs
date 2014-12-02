@@ -13,9 +13,15 @@ namespace Charlotte
         private static readonly Dictionary<MqttHost, int> ClientUseCount = new Dictionary<MqttHost, int>();
         private readonly MqttHost _thishost;
 
-        public bool IsConnected => On.IsConnected;
+        public bool IsConnected
+        {
+            get { return On.IsConnected; }
+        }
 
-        public void Run() => Connect();
+        public void Run()
+        {
+            Connect();
+        }
 
         protected virtual void Stop() { }
 

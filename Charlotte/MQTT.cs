@@ -35,7 +35,10 @@ namespace Charlotte
         }
 
 
-        public bool IsConnected => _client.IsConnected;
+        public bool IsConnected
+        {
+            get { return _client.IsConnected; }
+        }
 
         public void Connect()
         {
