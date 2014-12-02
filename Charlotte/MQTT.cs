@@ -10,92 +10,32 @@ namespace Charlotte
 {
     public class Mqtt
     {
-        private readonly MqttClient _client;
         private readonly List<MqttHandler> _handlers;
-        private readonly string _clientId;
-        private readonly string _username;
-        private readonly string _password;
-        private readonly MqttTopicMatcher topicMatcher;
+        private readonly MqttTopicMatcher _topicMatcher;
+        private readonly MQTTConnection _connection;
 
-        public Mqtt(string brokerHostName, int brokerPort, string username, string password)
+        public Mqtt(MQTTConnection connection)
         {
-            this._username = username;
-            this._password = password;
-
-            topicMatcher = new MqttTopicMatcher();
-
-            _clientId = "charl" + Guid.NewGuid().ToString().Substring(0, 6);
-
-            _client = new MqttClient(brokerHostName, brokerPort, false, null);
-            _client.MqttMsgPublishReceived += (o, args) => MqttMsgReceived(args);
-
+            _connection = connection;
+            _topicMatcher = new MqttTopicMatcher();
             _handlers = new List<MqttHandler>();
 
-            //LogTo.Debug("New MQTT created for {2}@{0}:{1}", brokerHostName, brokerPort, username);
+            _connection.MqttMsgPublishReceived += OnConnectionOnMqttMsgPublishReceived;
         }
 
-
-        public bool IsConnected
+        private void OnConnectionOnMqttMsgPublishReceived(object o, MqttMsgPublishEventArgs args)
         {
-            get { return _client.IsConnected; }
+            MqttMsgReceived(args);
         }
 
-        public void Connect()
+        internal void Disconnect()
         {
-            try
+            foreach (var handler in _handlers)
             {
-                if (!IsConnected)
-                {
-                    _client.Connect(_clientId, _username, _password);
-                }
+                _connection.Unsubscribe(new[] {_topicMatcher.BoilWildcards(handler.Topic) });
             }
-            catch (MqttConnectionException e)
-            {
-                // LogTo.ErrorException("Couldn't connect to MQTT broker", e);
-                throw;
-            }
-            catch (MqttCommunicationException e)
-            {
-                // Log
-                throw;
-            }
-        }
 
-        public void Disconnect()
-        {
-            _client.Disconnect();
-        }
-
-        public void Publish(string topic, string message)
-        {
-            if (!IsConnected)
-                throw new Exception("Not connected");
-
-            if (message == null)
-                throw new ArgumentNullException("message");
-            if (topic == null)
-                throw new ArgumentNullException("topic");
-
-            lock (_client)
-            {
-                _client.Publish(topic, Encoding.UTF8.GetBytes(message));
-            }
-        }
-
-        public void Publish(string topic, string message, byte qos, bool retain)
-        {
-            if (!IsConnected)
-                throw new Exception("Not connected");
-
-            if (message == null)
-                throw new ArgumentNullException("message");
-            if (topic == null)
-                throw new ArgumentNullException("topic");
-
-            lock (_client)
-            {
-                _client.Publish(topic, Encoding.UTF8.GetBytes(message), qos, retain);
-            }
+            _connection.MqttMsgPublishReceived -= OnConnectionOnMqttMsgPublishReceived;
         }
 
         private void MqttMsgReceived(MqttMsgPublishEventArgs e)
@@ -108,7 +48,7 @@ namespace Charlotte
             {
                 foreach (var handler in _handlers)
                 {
-                    if (topicMatcher.TopicsMatch(message, handler.Topic, e.Topic))
+                    if (_topicMatcher.TopicsMatch(message, handler.Topic, e.Topic))
                         actions.Add(handler.Action);
                 }
             }
@@ -121,14 +61,24 @@ namespace Charlotte
         {
             set
             {
-                topicMatcher.VerifyWildcardNames(topic);
+                _topicMatcher.VerifyWildcardNames(topic);
 
-                _client.Subscribe(new[] { topicMatcher.BoilWildcards(topic) }, new byte[] { 2 });
+                _connection.Subscribe(new[] { _topicMatcher.BoilWildcards(topic) }, new byte[] { 2 });
                 lock (_handlers)
                 {
                     _handlers.Add(new MqttHandler(topic, value));
                 }
             }
+        }
+
+        public void Publish(string topic, string message)
+        {
+            _connection.Publish(topic, message);
+        }
+
+        public void Publish(string topic, string message, bool retain)
+        {
+            _connection.Publish(topic, message, 2, retain);
         }
     }
 }

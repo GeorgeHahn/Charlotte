@@ -9,13 +9,13 @@ namespace Charlotte
         //protected Action<string, string> Publish;
         protected Action OnConnect;
 
-        private static readonly Dictionary<MqttHost, Mqtt> Clients = new Dictionary<MqttHost, Mqtt>();
+        private static readonly Dictionary<MqttHost, MQTTConnection> Clients = new Dictionary<MqttHost, MQTTConnection>();
         private static readonly Dictionary<MqttHost, int> ClientUseCount = new Dictionary<MqttHost, int>();
         private readonly MqttHost _thishost;
 
         public bool IsConnected
         {
-            get { return On.IsConnected; }
+            get { return Clients[_thishost].IsConnected; }
         }
 
         public void Run()
@@ -23,14 +23,14 @@ namespace Charlotte
             Connect();
         }
 
-        protected virtual void Stop() { }
+        protected virtual void OnStop() { }
 
         protected MqttModule(string brokerHostName, int brokerPort, string username, string password)
         {
             _thishost = new MqttHost(brokerHostName, brokerPort, username);
             if (!Clients.ContainsKey(_thishost))
             {
-                Clients[_thishost] = new Mqtt(brokerHostName, brokerPort, username, password);
+                Clients[_thishost] = new MQTTConnection(brokerHostName, brokerPort, username, password);
                 ClientUseCount[_thishost] = 1;
             }
             else
@@ -38,7 +38,7 @@ namespace Charlotte
                 ClientUseCount[_thishost]++;
             }
 
-            On = Clients[_thishost];
+            On = new Mqtt(Clients[_thishost]);
 
             //Publish = (topic, message) =>
             //{
@@ -61,23 +61,24 @@ namespace Charlotte
 
         public void Publish(string topic, string message, bool retain)
         {
-            On.Publish(topic, message, 2, retain);
+            On.Publish(topic, message, retain);
         }
 
         protected void Connect()
         {
-            On.Connect();
+            Clients[_thishost].Connect();
             if (OnConnect != null)
                 OnConnect();
         }
 
         public void Disconnect()
         {
-            Stop();
+            OnStop();
+            On.Disconnect();
             ClientUseCount[_thishost]--;
 
             if (ClientUseCount[_thishost] <= 0)
-                On.Disconnect();
+                Clients[_thishost].Disconnect();
         }
     }
 }
