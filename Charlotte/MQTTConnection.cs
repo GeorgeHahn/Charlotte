@@ -19,10 +19,9 @@ namespace Charlotte
         public event MqttClient.MqttMsgPublishEventHandler MqttMsgPublishReceived;
 
         public MQTTConnection(string brokerHostName, int brokerPort, string username, string password)
-        {
-            
-            this._username = username;
-            this._password = password;
+        {           
+            _username = username;
+            _password = password;
             _clientId = "charl" + Guid.NewGuid().ToString().Substring(0, 6);
 
             _client = new MqttClient(brokerHostName, brokerPort, false, null);

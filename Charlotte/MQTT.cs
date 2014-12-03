@@ -52,7 +52,7 @@ namespace Charlotte
                         actions.Add(handler.Action);
                 }
             }
-
+            
             foreach (var action in actions)
                 action(message);
         }
