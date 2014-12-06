@@ -14,7 +14,7 @@ namespace Charlotte
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             if (!_values.ContainsKey(binder.Name))
-                throw new MissingMemberException("Member not found");
+                throw new MissingMemberException("Member not found: " + binder.Name);
 
             result = _values[binder.Name];
             return true;
