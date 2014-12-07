@@ -1,4 +1,4 @@
-# Charlotte
+# Charlotte [![Build status](https://ci.appveyor.com/api/projects/status/p54dccxh87xf4h5w?svg=true)](https://ci.appveyor.com/project/GeorgeHahn/charlotte)
 
 ## The Modern MQTT Framework
 
