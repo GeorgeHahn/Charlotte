@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Charlotte</id>
+        <version>$version$</version>
+        <authors>George  Hahn</authors>
+        <projectUrl>http://github.com/georgehahn/charlotte</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Modern MQTT framework</description>
+        <tags>MQTT, IoT</tags>
+        <dependencies>
+            <dependency id="M2Mqtt" version="3.6" />
+        </dependencies>
+    </metadata>
+	<files>
+		<file src="$file$" target="lib]" />
+	</files>
+</package>
