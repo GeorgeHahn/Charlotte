@@ -11,4 +11,4 @@ $content = $content -replace '\$file\$',$file
 
 $content | Out-File $env:APPVEYOR_BUILD_FOLDER\nuget\$proj.compiled.nuspec
 
-& nuget pack $root\nuget\$proj.compiled.nuspec -OutputDirectory $outFolder
+& nuget pack $root\nuget\$proj.compiled.nuspec -OutputDirectory ..\out
