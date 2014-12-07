@@ -1,10 +1,10 @@
 $proj = "Charlotte"
-$file = $proj\bin\$env:CONFIGURATION\$proj.dll
-$versionStr = $env:APPVEYOR_BUILD_VERSION
+$file = "$($proj)\bin\$($env:CONFIGURATION)\$($proj).dll"
+$versionStr = "$($env:APPVEYOR_BUILD_VERSION)"
 
 Write-Host "Setting .nuspec version tag to $versionStr"
 
-$content = (Get-Content $root\nuget\$proj.nuspec) 
+$content = (Get-Content $env:APPVEYOR_BUILD_FOLDER\nuget\$proj.nuspec) 
 $content = $content -replace '\$version\$',$versionStr
 $content = $content -replace '\$file\$',$file
 
