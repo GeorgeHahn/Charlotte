@@ -9,6 +9,11 @@ $content = (Get-Content $root\nuget\$proj.nuspec)
 $content = $content -replace '\$version\$',$versionStr
 $content = $content -replace '\$file\$',$file
 
-$content | Out-File $env:APPVEYOR_BUILD_FOLDER\nuget\$proj.compiled.nuspec
+$content | Out-File $root\nuget\$proj.compiled.nuspec
 
-& nuget pack $root\nuget\$proj.compiled.nuspec -OutputDirectory ..\out
+& nuget pack $root\nuget\$proj.compiled.nuspec -OutputDirectory $root\nuget\
+
+If($lastexitcode -eq 0)
+	Write-Host "Nuget package built successfully"
+else
+	Write-Host "Nuget packaging error $($lastexitcode)"
