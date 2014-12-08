@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Charlotte</id>
-        <version></version>
+        <version>$version$</version>
         <authors>George  Hahn</authors>
         <projectUrl>http://github.com/georgehahn/charlotte</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
