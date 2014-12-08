@@ -14,6 +14,8 @@ $content | Out-File $root\nuget\$proj.compiled.nuspec
 & nuget pack $root\nuget\$proj.compiled.nuspec -OutputDirectory $root\nuget\
 
 If($lastexitcode -eq 0)
+{
 	Write-Host "Nuget package built successfully"
-else
+} else {
 	Write-Host "Nuget packaging error $($lastexitcode)"
+}
