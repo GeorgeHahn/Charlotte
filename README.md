@@ -3,18 +3,23 @@
 ## The Modern MQTT Framework
 
 ```csharp
-public class ProximitySensor : MQTTModule
-	: base("localhost", 1883)
+public class ProximitySensor
 {
-	On["{room}/sensors/{sensor}"] = _ =>
+	public ProximitySensor(string broker)
 	{
-		Log("Data received from {0} (in {1}): {2}", _.sensor, _.room, _.Message);
-	};
+		var mqtt = new Charlotte(broker);
 
-	On["{room}/sensors/presence"] = _ =>
-	{
-		if(_.Message == "human present")
-			Publish(_.room + "/lights/", "on");
+		mqtt.On["{room}/sensors/{sensor}"] = msg =>
+		{
+			Log("Data received from {0} (in {1}): {2}", msg.sensor, msg.room, msg.Message);
+		};
+
+		mqtt.On["sensors/bedroom/presence"] = async msg =>
+		{
+			if (msg.Message == "human present")
+			{
+				await mqtt.Publish("lights/bedroom", "on");
+			}
+		};
 	}
-}
 ```
