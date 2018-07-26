@@ -1,14 +1,20 @@
-﻿namespace Charlotte.Examples
+﻿using System;
+using System.Net.Mqtt;
+using System.Threading.Tasks;
+
+namespace Charlotte.Examples
 {
-    public class SimplePublish : MqttModule
+    public class SimplePublish
     {
-        public SimplePublish()
-            : base("localhost")
+        public SimplePublish(string broker)
         {
-            On["sensors/bedroom/presence"] = _ =>
+            var mqtt = new Charlotte(broker);
+            mqtt.On["sensors/bedroom/presence"] = async msg =>
             {
-                if (_.Message == "human present")
-                    Publish("lights/bedroom", "on");
+                if (msg.Message == "human present")
+                {
+                    await mqtt.Publish("lights/bedroom", "on");
+                }
             };
         }
     }

@@ -11,7 +11,7 @@ namespace Charlotte.Tests
         {
             MqttTopicMatcher matcher = new MqttTopicMatcher();
 
-            matcher.BoilWildcards("{wildcard}/{another}/{again}")
+            matcher.ConvertMatchingGroupsToMQTTWildcards("{wildcard}/{another}/{again}")
                 .ShouldEqual("+/+/+");
         }
 
@@ -20,7 +20,7 @@ namespace Charlotte.Tests
         {
             MqttTopicMatcher matcher = new MqttTopicMatcher();
 
-            matcher.BoilWildcards("{wildcard}/not_a_wildcard/{but_this_is}")
+            matcher.ConvertMatchingGroupsToMQTTWildcards("{wildcard}/not_a_wildcard/{but_this_is}")
                 .ShouldEqual("+/not_a_wildcard/+");
         }
     }
@@ -79,7 +79,7 @@ namespace Charlotte.Tests
         {
             MqttTopicMatcher matcher = new MqttTopicMatcher();
 
-            Assert.Throws<InvalidWildcardException>(() => { matcher.VerifyWildcardNames("{wildcard}/not_a_wildcard/{this is invalid}"); });
+            Assert.Throws<MqttTopicMatcher.InvalidWildcardException>(() => { matcher.VerifyWildcardNames("{wildcard}/not_a_wildcard/{#invalid}"); });
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace Charlotte.Tests
         {
             MqttTopicMatcher matcher = new MqttTopicMatcher();
 
-            Assert.DoesNotThrow(() => { matcher.VerifyWildcardNames("{wildcard}/not_a_wildcard/{this_is_valid}"); });
+            matcher.VerifyWildcardNames("{wildcard}/not_a_wildcard/{this_is_valid}");
         }
     }
 }

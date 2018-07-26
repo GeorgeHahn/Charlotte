@@ -1,12 +1,18 @@
-﻿namespace Charlotte.Examples
+﻿using System;
+
+namespace Charlotte.Examples
 {
     class Program
     {
         static void Main()
         {
-            (new SimplePublish()).Run();
-            (new SimpleSubscribe()).Run();
-            (new WildcardSubscribe()).Run();
+            Console.WriteLine("Running examples");
+
+            var broker = "127.0.0.1:8883";
+
+            new SimplePublish(broker);
+            new SimpleSubscribe(broker);
+            new WildcardSubscribe(broker);
         }
     }
 }

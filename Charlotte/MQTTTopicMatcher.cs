@@ -14,10 +14,10 @@ namespace Charlotte
             { }
         }
 
-        internal void VerifyWildcardNames(string topic)
+        public void VerifyWildcardNames(string topic)
         {
-            // Don't allow wildcard names that are invalid C# identifiers
-            var ident = new Regex(@"(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl})((\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\p{Cf}))*");
+            // Don't allow some confusing wildcard names
+            var ident = new Regex(@"({|}|\#|\+)+");
 
             foreach (var wildcard in ExtractWildcards(topic))
             {
@@ -29,7 +29,7 @@ namespace Charlotte
             }
         }
 
-        private IEnumerable<string> ExtractWildcards(string topic)
+        public IEnumerable<string> ExtractWildcards(string topic)
         {
             while (topic.Contains('{') && topic.Contains('}'))
             {
@@ -41,7 +41,7 @@ namespace Charlotte
         }
 
         // Todo: convert this from recursive -> iterative
-        internal string ConvertMatchingGroupsToMQTTWildcards(string topic)
+        public string ConvertMatchingGroupsToMQTTWildcards(string topic)
         {
             // If the topic doesn't contain any matching portions, don't process it
             if (!(topic.Contains('{') && topic.Contains('}')))
