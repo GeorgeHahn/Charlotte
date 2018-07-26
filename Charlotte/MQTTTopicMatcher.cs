@@ -1,34 +1,35 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Charlotte
 {
-    public class InvalidWildcardException : ApplicationException
-    {
-        public InvalidWildcardException(string message)
-            : base(message)
-        { }
-    }
-
     public class MqttTopicMatcher
     {
-        public void VerifyWildcardNames(string topic)
+        public class InvalidWildcardException : Exception
         {
+            public InvalidWildcardException(string message)
+                : base(message)
+            { }
+        }
+
+        internal void VerifyWildcardNames(string topic)
+        {
+            // Don't allow wildcard names that are invalid C# identifiers
             var ident = new Regex(@"(\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl})((\p{Lu}|\p{Ll}|\p{Lt}|\p{Lm}|\p{Lo}|\p{Nl}|\p{Mn}|\p{Mc}|\p{Nd}|\p{Pc}|\p{Cf}))*");
 
             foreach (var wildcard in ExtractWildcards(topic))
             {
                 var match = ident.Match(wildcard.Normalize());
                 if ((!match.Success) || (match.Groups[0].ToString() != wildcard))
+                {
                     throw new InvalidWildcardException("Invalid wildcards in topic: " + topic);
+                }
             }
         }
 
-        public IEnumerable<string> ExtractWildcards(string topic)
+        private IEnumerable<string> ExtractWildcards(string topic)
         {
             while (topic.Contains('{') && topic.Contains('}'))
             {
@@ -37,21 +38,28 @@ namespace Charlotte
 
                 yield return wildcardName;
             }
-        } 
+        }
 
-        public string BoilWildcards(string topic)
+        // Todo: convert this from recursive -> iterative
+        internal string ConvertMatchingGroupsToMQTTWildcards(string topic)
         {
+            // If the topic doesn't contain any matching portions, don't process it
             if (!(topic.Contains('{') && topic.Contains('}')))
+            {
                 return topic;
+            }
 
-            var str = BoilWildcards(topic.Replace(topic.Substring(topic.IndexOf('{'), topic.IndexOf('}') - topic.IndexOf('{') + 1), "+"));
+            // Recursively replace matching portions with '+' wildcard
+            var str = ConvertMatchingGroupsToMQTTWildcards(topic.Replace(topic.Substring(topic.IndexOf('{'), topic.IndexOf('}') - topic.IndexOf('{') + 1), "+"));
             return str;
         }
 
         public bool TopicsMatch(dynamic message, string key, string topic)
         {
             if (key == topic)
+            {
                 return true;
+            }
 
             if (key.Contains('{') && key.Contains('}'))
             {
@@ -75,9 +83,13 @@ namespace Charlotte
 
                     string actualname;
                     if (topic.Contains('/'))
+                    {
                         actualname = topic.Substring(0, topic.IndexOf('/'));
+                    }
                     else
+                    {
                         actualname = topic;
+                    }
 
                     message[wildcardName] = actualname;
                     return true;
@@ -87,7 +99,9 @@ namespace Charlotte
             if (!key.Contains('#') && !key.Contains('+'))
             {
                 if (key != topic)
+                {
                     return false;
+                }
             }
 
             if (key.Contains('#'))
@@ -103,15 +117,21 @@ namespace Charlotte
                 string[] topicparts = topic.Split('/');
 
                 if (keyparts.Length != topicparts.Length)
+                {
                     return false;
+                }
 
                 for (int i = 0; i < keyparts.Length; i++)
                 {
                     if (keyparts[i] == "+")
+                    {
                         continue;
+                    }
 
                     if (keyparts[i] != topicparts[i])
+                    {
                         return false;
+                    }
                 }
 
                 return true;
