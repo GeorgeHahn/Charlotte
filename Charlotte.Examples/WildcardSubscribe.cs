@@ -6,7 +6,7 @@ namespace Charlotte.Examples
     {
         public WildcardSubscribe(string broker)
         {
-            var mqtt = new Charlotte(broker);
+            var mqtt = new Mqtt(broker);
             mqtt.On["{room}/sensors/{sensor}"] = _ =>
             {
                 Console.WriteLine("{0} in {1} measured {2}", _.room, _.sensor, _.Message);

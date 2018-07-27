@@ -8,7 +8,7 @@ namespace Charlotte.Examples
     {
         public SimplePublish(string broker)
         {
-            var mqtt = new Charlotte(broker);
+            var mqtt = new Mqtt(broker);
             mqtt.On["sensors/bedroom/presence"] = async msg =>
             {
                 if (msg.Message == "human present")
