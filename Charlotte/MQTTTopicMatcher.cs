@@ -54,6 +54,7 @@ namespace Charlotte
             return str;
         }
 
+        // TODO: Match topics with a reasonable algorithm
         public bool TopicsMatch(dynamic message, string key, string topic)
         {
             if (key == topic)
@@ -66,7 +67,7 @@ namespace Charlotte
                 string wildcardName = key.Substring(key.IndexOf('{') + 1, key.IndexOf('}') - key.IndexOf('{') - 1);
                 if (TopicsMatch(message, key.Replace('{' + wildcardName + '}', "+"), topic))
                 {
-                    int wildcardpos = key.IndexOf(wildcardName) - 1;
+                    int wildcardpos = key.IndexOf('{' + wildcardName + '}');
                     string wildcardx = key.Substring(0, wildcardpos);
                     int slashcount = 0;
                     while (wildcardx.Contains('/'))
