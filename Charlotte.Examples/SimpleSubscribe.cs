@@ -2,14 +2,14 @@
 
 namespace Charlotte.Examples
 {
-    public class SimpleSubscribe : MqttModule
+    public class SimpleSubscribe
     {
-        public SimpleSubscribe()
-            : base("localhost")
+        public SimpleSubscribe(string broker)
         {
-            On["lights/bedroom"] = _ =>
+            var mqtt = new Mqtt(broker);
+            mqtt.On["lights/bedroom"] = msg =>
             {
-                Console.WriteLine("Bedroom lights set to {0}", _.Message);
+                Console.WriteLine("Bedroom lights set to {0}", msg.Message);
             };
         }
     }

@@ -2,14 +2,14 @@
 
 namespace Charlotte.Examples
 {
-    public class WildcardSubscribe : MqttModule
+    public class WildcardSubscribe
     {
-        public WildcardSubscribe()
-            : base("localhost")
+        public WildcardSubscribe(string broker)
         {
-            On["{room}/sensors/{sensor}"] = _ =>
+            var mqtt = new Mqtt(broker);
+            mqtt.On["{room}/sensors/{sensor}"] = msg =>
             {
-                Console.WriteLine("{0} in {1} measured {2}", _.room, _.sensor, _.Message);
+                Console.WriteLine($"{msg.sensor} in {msg.room} measured {msg.Message}");
             };
         }
     }
