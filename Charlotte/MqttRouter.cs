@@ -25,7 +25,7 @@ namespace Charlotte
 
         private void MqttMsgReceived(MqttApplicationMessage msg)
         {
-            var message = new MqttMessage { Message = Encoding.UTF8.GetString(msg.Payload), Topic = msg.Topic };
+            var message = new MqttMessage { Message = msg.Payload == null ? null : Encoding.UTF8.GetString(msg.Payload), Topic = msg.Topic };
 
             List<Action<MqttMessage>> actions = new List<Action<MqttMessage>>();
 
