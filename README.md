@@ -1,4 +1,4 @@
-# Charlotte [![AppVeyor branch](https://img.shields.io/appveyor/ci/GeorgeHahn/Charlotte/master.svg)](https://ci.appveyor.com/project/GeorgeHahn/charlotte) [![NuGet](https://img.shields.io/nuget/v/Charlotte.svg)](https://www.nuget.org/packages/Charlotte)
+# Charlotte [![pipeline status](https://gitlab.com/GeorgeHahn/Charlotte/badges/master/pipeline.svg)](https://gitlab.com/GeorgeHahn/Charlotte/commits/master) [![NuGet](https://img.shields.io/nuget/v/Charlotte.svg)](https://www.nuget.org/packages/Charlotte)
 
 ## The Modern MQTT Framework
 
