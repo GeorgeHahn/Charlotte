@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <VersionPrefix>2.0.4</VersionPrefix>
+    <VersionPrefix>2.0.5</VersionPrefix>
     
     <PackageId>Charlotte</PackageId>
     <Authors>George Hahn</Authors>
-    <Description>Repository for Entity Framework Core with sharding support</Description>
+    <Description>A modern MQTT library for .NET</Description>
     <PackageProjectUrl>http://github.com/georgehahn/charlotte</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright 2018 (c) George Hahn. All rights reserved.</Copyright>
