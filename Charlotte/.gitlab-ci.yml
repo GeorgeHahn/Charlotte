@@ -1,0 +1,34 @@
+stages:
+  - build
+  - deploy
+
+build:
+  image: microsoft/dotnet:2.1-sdk
+  stage: build
+  script:
+    - dotnet build Charlotte -c Release
+    - dotnet build Charlotte.Tests -c Release
+    - dotnet build Charlotte.Examples -c Release
+    - dotnet test Charlotte.Tests/Charlotte.Tests.csproj
+  artifacts:
+    name: "${CI_COMMIT_REF_NAME}"
+    paths:
+      - "*/bin"
+
+deploy_dev:
+  image: microsoft/dotnet:2.1-sdk
+  stage: deploy
+  script:
+    - dotnet pack Charlotte --version-suffix alpha -c Release
+    - dotnet nuget push Charlotte -s https://api.nuget.org/v3/index.json -k $nuget_api_key
+  only:
+    - dev
+
+deploy_master:
+  image: microsoft/dotnet:2.1-sdk
+  stage: deploy
+  script:
+    - dotnet pack Charlotte -c Release
+    - dotnet nuget push Charlotte -s https://api.nuget.org/v3/index.json -k $nuget_api_key
+  only:
+    - master
