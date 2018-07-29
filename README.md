@@ -1,4 +1,4 @@
-# Charlotte [![pipeline status](https://gitlab.com/GeorgeHahn/Charlotte/badges/master/pipeline.svg)](https://gitlab.com/GeorgeHahn/Charlotte/commits/master) [![NuGet](https://img.shields.io/nuget/v/Charlotte.svg)](https://www.nuget.org/packages/Charlotte)
+# Charlotte [![pipeline status](https://gitlab.com/GeorgeHahn/Charlotte/badges/master/pipeline.svg)](https://gitlab.com/GeorgeHahn/Charlotte/commits/master) [![NuGet](https://img.shields.io/nuget/vpre/Charlotte.svg)](https://www.nuget.org/packages/Charlotte)
 
 ## The Modern MQTT Framework
 
