@@ -26,7 +26,7 @@ namespace Charlotte
         public Mqtt(string IP, MqttClientCredentials creds, MqttConfiguration config)
         {
             var client = MqttClient.CreateAsync(IP, config);
-            client.RunSynchronously();
+            client.Wait();
             Client = client.Result;
             On = new MqttRouter(Client);
         }
