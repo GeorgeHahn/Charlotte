@@ -17,14 +17,14 @@ namespace Charlotte
         public void VerifyWildcardNames(string topic)
         {
             // Don't allow some confusing wildcard names
-            var ident = new Regex(@"({|}|\#|\+)+");
+            var ident = new Regex(@"([\{|\}|#|\+]+)");
 
             foreach (var wildcard in ExtractWildcards(topic))
             {
                 var match = ident.Match(wildcard.Normalize());
-                if ((!match.Success) || (match.Groups[0].ToString() != wildcard))
+                if (match.Success)
                 {
-                    throw new InvalidWildcardException("Invalid wildcards in topic: " + topic);
+                    throw new InvalidWildcardException($"Invalid wildcards in topic: {topic}, '{match.Groups[0].ToString()}'");
                 }
             }
         }
