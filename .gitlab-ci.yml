@@ -6,21 +6,25 @@ build:
   image: microsoft/dotnet:2.1-sdk
   stage: build
   script:
-    - dotnet build Charlotte -c Release
-    - dotnet build Charlotte.Tests -c Release
-    - dotnet build Charlotte.Examples -c Release
+    - dotnet build Charlotte -c Release -o "${PWD}/artifacts/"
+    - dotnet build Charlotte.Tests -c Release -o "${PWD}/artifacts/"
+    - dotnet build Charlotte.Examples -c Release -o "${PWD}/artifacts/"
     - dotnet test Charlotte.Tests/Charlotte.Tests.csproj
   artifacts:
-    name: "${CI_COMMIT_REF_NAME}"
+    expire_in: 31d
     paths:
-      - "*/bin"
+      - artifacts/*
 
 deploy_dev:
   image: microsoft/dotnet:2.1-sdk
   stage: deploy
   script:
-    - dotnet pack Charlotte --version-suffix alpha -c Release
+    - dotnet pack Charlotte --version-suffix alpha -c Release -o "${PWD}/artifacts/"
     - dotnet nuget push Charlotte -s https://api.nuget.org/v3/index.json -k $nuget_api_key
+  artifacts:
+    expire_in: 31d
+    paths:
+      - artifacts/*
   only:
     - dev
 
@@ -28,7 +32,10 @@ deploy_master:
   image: microsoft/dotnet:2.1-sdk
   stage: deploy
   script:
-    - dotnet pack Charlotte -c Release
-    - dotnet nuget push Charlotte -s https://api.nuget.org/v3/index.json -k $nuget_api_key
+    - dotnet pack Charlotte --version-suffix beta -c Release -o "${PWD}/artifacts/"
+    - dotnet nuget push --force-english-output -s https://api.nuget.org/v3/index.json -k "${nuget_api_key}" ./artifacts/*.nupkg
+  artifacts:
+    paths:
+      - artifacts/*
   only:
     - master
