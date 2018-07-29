@@ -54,6 +54,7 @@ namespace Charlotte
                 var sub = _topicMatcher.ConvertMatchingGroupsToMQTTWildcards(topic);
                 subscriptions.Add(sub);
 
+                // TODO: This should only be attempted if the connection is live
                 // TODO: Subscribe QoS customization
                 _connection.SubscribeAsync(sub, MqttQualityOfService.AtLeastOnce);
                 lock (_handlers)

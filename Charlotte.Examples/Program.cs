@@ -8,11 +8,12 @@ namespace Charlotte.Examples
         {
             Console.WriteLine("Running examples");
 
-            var broker = "127.0.0.1:8883";
+            var broker = "127.0.0.1";
 
             new SimplePublish(broker);
             new SimpleSubscribe(broker);
             new WildcardSubscribe(broker);
+            Console.ReadLine();
         }
     }
 }

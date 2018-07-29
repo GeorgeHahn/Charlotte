@@ -11,26 +11,29 @@ namespace Charlotte
         public MqttRouter On { get; private set; }
         public IMqttClient Client { get; private set; }
         
-        public Mqtt(string IP)
-            :this(IP, new MqttClientCredentials(new Guid().ToString()), new MqttConfiguration())
+        /// Create MQTT router and MQTT client
+        public Mqtt(string IP, int port=1883, MqttClientCredentials creds= null)
+            :this(IP, new MqttConfiguration{Port = port}, creds)
         { }
 
-        public Mqtt(string IP, MqttClientCredentials creds)
-            :this(IP, creds, new MqttConfiguration())
-        { }
-
-        public Mqtt(string IP, MqttConfiguration config)
-            :this(IP, new MqttClientCredentials(new Guid().ToString()), config)
-        { }
-
-        public Mqtt(string IP, MqttClientCredentials creds, MqttConfiguration config)
+        /// Create MQTT router and MQTT client
+        public Mqtt(string IP, MqttConfiguration config, MqttClientCredentials creds = null)
         {
             var client = MqttClient.CreateAsync(IP, config);
             client.Wait();
             Client = client.Result;
+
+            Task<SessionState> conn;
+            if(creds == null)
+                conn = Client.ConnectAsync();
+            else
+                conn = Client.ConnectAsync(creds);
+            conn.Wait();
+
             On = new MqttRouter(Client);
         }
 
+        /// Create MQTT router from existing client. Client should be connected.
         public Mqtt(string IP, IMqttClient client)
             :this(IP, new MqttClientCredentials(new Guid().ToString()), client)
         { }
