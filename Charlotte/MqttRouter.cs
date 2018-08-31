@@ -60,7 +60,8 @@ namespace Charlotte
                 }
 
                 // TODO: Subscribe QoS customization
-                _connection.SubscribeAsync(sub, MqttQualityOfService.AtMostOnce);
+                var suback = _connection.SubscribeAsync(sub, MqttQualityOfService.AtLeastOnce);
+                suback.Wait();
                 lock (_handlers)
                 {
                     _handlers.Add(new MqttHandler(topic, value));
